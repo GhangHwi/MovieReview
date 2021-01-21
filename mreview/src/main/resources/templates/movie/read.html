@@ -54,7 +54,7 @@
 
         <div class="uploadResult">
             <ul>
-                <li th:each="movieImage: ${dto.imageDTOList}" >
+                <li th:each="movieImage: ${dto.imageDTOList}" th:data-file="${movieImage.getThumbnailURL()}">
                     <img th:if="${movieImage.path != null}" th:src="|/display?fileName=${movieImage.getThumbnailURL()}|">
                 </li>
             </ul>
@@ -104,7 +104,7 @@
         </div>
 
         <div class="imageModal modal" tabindex="-2" role="dialog">
-            <div class="modaßl-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Picture</h5>
@@ -262,6 +262,16 @@
                         }
                     });
                     reviewModal.modal('hide');
+                });
+
+                $(".uploadResult li").click(function(){
+                    var file = $(this).data('file');
+
+                    console.log(file);
+
+                    $('.imageModal .modal-body').html("<img style='width:100%' src='/display?fileName="+file+"&size=1' >");
+
+                    $('.imageModal').modal("show");
                 });
             });
 

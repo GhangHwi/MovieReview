@@ -34,12 +34,12 @@ public class UploadController {
     private String uploadPath;
 
     @PostMapping("/uploadAjax")
-    public ResponseEntity<List<UploadResultDTO>> uploadFile(MultipartFile[] uploadFiles){
+    public ResponseEntity<List<UploadResultDTO>> uploadFile(MultipartFile[] uploadFiles) {
 
         List<UploadResultDTO> resultDTOList = new ArrayList<>();
-        for( MultipartFile uploadFile: uploadFiles){
+        for (MultipartFile uploadFile : uploadFiles) {
 
-            if (uploadFile.getContentType().startsWith("image") == false ){
+            if (uploadFile.getContentType().startsWith("image") == false) {
                 log.warn("this file is not image type");
             }
 
@@ -62,7 +62,7 @@ public class UploadController {
                 Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 100, 100);
 
                 resultDTOList.add(new UploadResultDTO(fileName, uuid, folderPath));
-            } catch ( IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -70,30 +70,6 @@ public class UploadController {
 
         return new ResponseEntity<>(resultDTOList, HttpStatus.OK);
 
-    }
-
-    @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(String fileName){
-        ResponseEntity<byte[]> result = null;
-
-        try{
-            String srcFileName = URLDecoder.decode(fileName, "UTF-8");
-
-            log.info("fileName: " + srcFileName);
-
-            File file = new File(uploadPath + File.separator + srcFileName);
-
-            log.info("file: " + file);
-
-            HttpHeaders header = new HttpHeaders();
-
-            header.add("Content-Type", Files.probeContentType((file.toPath())));
-            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
-        } catch ( Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return result;
     }
 
     @PostMapping("/removeFile")
@@ -114,6 +90,31 @@ public class UploadController {
             e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/display")
+    public ResponseEntity<byte[]> getFile(String fileName, String size){
+
+        ResponseEntity<byte[]> result = null;
+
+        try{
+            String srcFileName = URLDecoder.decode(fileName, "UTF-8");
+
+            File file = new File(uploadPath + File.separator + srcFileName);
+
+            if(size != null && size.equals("1")){
+                file = new File(file.getParent(), file.getName().substring(2));
+            }
+
+            HttpHeaders header = new HttpHeaders();
+
+            header.add("Content-Type", Files.probeContentType(file.toPath()));
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return result;
     }
 
     private String makeFolder(){
