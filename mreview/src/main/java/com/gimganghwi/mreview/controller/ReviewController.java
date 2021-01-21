@@ -52,6 +52,6 @@ public class ReviewController {
     public ResponseEntity<Long> removeReview(@PathVariable Long reviewnum){
         reviewService.remove(reviewnum);
 
-        return new ResponseEntity<>(reviewnum,HttpStatus.OK);
+        return new ResponseEntity<>(reviewnum, HttpStatus.OK);
     }
 }
