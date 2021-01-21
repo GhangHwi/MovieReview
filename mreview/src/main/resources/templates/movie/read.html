@@ -200,6 +200,26 @@
                     });
                 }
                 getMovieReviews();
+
+                var reviewnum;
+
+                $('.reviewList').on("click", ".card-body", function(){
+
+                    $(".reviewSaveBtn").hide();
+                    $(".removeBtn, .modifyBtn").show();
+
+                    var targetReview = $(this);
+
+                    reviewnum = targetReview.data("reviewnum");
+                    console.log("reviewNum: " + reviewnum);
+                    inputMid.val(targetReview.data("mid"));
+                    inputText.val(targetReview.find('.card-title').clone().children().remove().end().text());
+
+                    var grade = targetReview.find('.card-title span').html();
+                    $(".starrr a:nth-child("+grade+")").trigger('click');
+
+                    $('.reviewModal').modal('show');
+                });
             });
         </script>
     </th:block>
