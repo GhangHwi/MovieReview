@@ -2,6 +2,8 @@ package com.gimganghwi.mreview.service;
 
 import com.gimganghwi.mreview.dto.MovieDTO;
 import com.gimganghwi.mreview.dto.MovieImageDTO;
+import com.gimganghwi.mreview.dto.PageRequestDTO;
+import com.gimganghwi.mreview.dto.PageResultDTO;
 import com.gimganghwi.mreview.entity.Movie;
 import com.gimganghwi.mreview.entity.MovieImage;
 
@@ -14,6 +16,29 @@ public interface MovieService {
 
     Long register(MovieDTO movieDTO);
 
+    PageResultDTO<MovieDTO, Object[]>getList(PageRequestDTO requestDTO);
+
+    default MovieDTO entitiesToDTO(Movie movie, List<MovieImage> movieImages, Double avg, Long reviewCnt){
+        MovieDTO movieDTO= MovieDTO.builder()
+                .mno(movie.getMno())
+                .title(movie.getTitle())
+                .regDate(movie.getRegDate())
+                .modDate(movie.getModDate())
+                .build();
+
+        List<MovieImageDTO> movieImageDTOList = movieImages.stream().map(movieImage -> {
+            return MovieImageDTO.builder().imgName(movieImage.getImgName())
+                    .path(movieImage.getPath())
+                    .uuid(movieImage.getUuid())
+                    .build();
+        }).collect(Collectors.toList());
+
+        movieDTO.setImageDTOList(movieImageDTOList);
+        movieDTO.setAvg(avg);
+        movieDTO.setReviewCnt(reviewCnt.intValue());
+
+        return movieDTO;
+    }
     default Map<String,Object> dtoToEntity(MovieDTO movieDTO){
         Map<String, Object> entityMap = new HashMap<>();
 
